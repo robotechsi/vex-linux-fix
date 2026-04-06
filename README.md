@@ -44,9 +44,16 @@ sudo usermod -a -G dialout $USER
 # Log out and log back in
 ```
 
-## Discovered & tested by
-**Oliver Buček** — RoboTech STEM Center, Ptuj, Slovenia  
-VEX Robotics Ambassador for Slovenia 🇸🇮  
+## About this fix
+This fix was discovered and developed by **Oliver Buček** from RoboTech STEM Center 
+in Ptuj, Slovenia, while setting up VEXcode for Linux-based classrooms. After 
+investigating the browser console errors, he identified that VEXcode incorrectly 
+uses `navigator.maxTouchPoints > 0` to detect Android tablets — which also triggers 
+on Linux systems that report touch support. This Chrome extension overrides that 
+value to 0, allowing VEXcode to run normally on any Linux desktop.
+
+**Oliver Buček** — RoboTech STEM Center, Ptuj, Slovenia
+VEX Robotics Ambassador for Slovenia 🇸🇮
 [robotech.si](https://robotech.si)
 
 ## License
