@@ -45,7 +45,7 @@ sudo usermod -a -G dialout $USER
 ```
 
 ## Discovered & tested by
-**Oliver Judež** — RoboTech STEM Center, Ptuj, Slovenia  
+**Oliver Buček** — RoboTech STEM Center, Ptuj, Slovenia  
 VEX Robotics Ambassador for Slovenia 🇸🇮  
 [robotech.si](https://robotech.si)
 
