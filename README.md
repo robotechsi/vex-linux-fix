@@ -53,7 +53,6 @@ on Linux systems that report touch support. This Chrome extension overrides that
 value to 0, allowing VEXcode to run normally on any Linux desktop.
 
 **Oliver Buček** — RoboTech STEM Center, Ptuj, Slovenia
-VEX Robotics Ambassador for Slovenia 🇸🇮
 [robotech.si](https://robotech.si)
 
 ## License
