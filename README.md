@@ -1,59 +1,79 @@
-# VEX Linux Chrome Fix
+# VEX Linux Fix
 
-Fixes VEXcode web apps on Linux (Pop!_OS, Ubuntu, etc.)
+A Chrome/Chromium extension that fixes two long-standing issues preventing **VEXcode** and **VEXcode VR** from working correctly on Linux.
 
-## Problem
-VEXcode detects Linux with touch support as Android tablet and shows:
-> "Web-based VEXcode IQ is not supported on Android"
+If you teach robotics on Linux and have hit *"not running on Android"* or VR playgrounds that load but won't run code, this extension is for you.
 
-## Solution
-A simple Chrome extension that sets maxTouchPoints to 0.
+---
 
-## Supported platforms
-- codeiq.vex.com (VEX IQ)
-- codeair.vex.com (VEX AIR)
-- code123.vex.com (VEX 123)
-- codego.vex.com (VEX GO)
-- codeaim.vex.com (VEX AIM)
-- codeexp.vex.com (VEX EXP)
-- codev5.vex.com (VEX V5)
+## What it fixes
+
+### 1. "Not running on Android" error (all VEXcode web apps)
+On Linux desktops with touch support, `navigator.maxTouchPoints > 0` causes VEX to misdetect the machine as an Android tablet and refuse to load. The extension overrides `maxTouchPoints` to `0`.
+
+Affected apps: `codeiq`, `codeair`, `code123`, `codeaim`, `codev5`.
+
+### 2. VEXcode VR playgrounds load but code won't run
+On `vr.vex.com`, the Unity simulation loads but pressing **Play** does nothing — the robot never moves. The cause is a chain of cross-origin isolation problems:
+
+- The page needs `SharedArrayBuffer`, which requires **COOP** + **COEP** headers (Unity WebGL threading).
+- The interpreter Web Workers (`SimPythonInterpreterWebWorker`, `SimVMWebWorker`) fail silently because, on a `crossOriginIsolated` page, **every worker script must also carry `Cross-Origin-Embedder-Policy: require-corp`** — and VEX's server does not send it.
+- All subresources additionally need `Cross-Origin-Resource-Policy: cross-origin`.
+- A report-only CSP interferes with worker creation and is removed.
+
+The extension injects the missing headers via `declarativeNetRequest` and applies the content-script fix inside the `VRWindow.html` iframe (`all_frames: true`, `world: MAIN`).
+
+---
 
 ## Installation
-1. Download: **Code → Download ZIP**
-2. Extract the ZIP
-3. Open Chrome → `chrome://extensions`
-4. Enable **Developer mode** (top right toggle)
-5. Click **Load unpacked**
-6. Select the extracted folder
-7. Open any VEXcode URL — it works! ✅
 
-## Requirements
-- Google Chrome installed as **.deb** (NOT Flatpak or Snap!)
-- Linux (tested on Pop!_OS COSMIC)
-
-## Install Chrome correctly
+1. Download or clone this repository:
 ```bash
-wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-sudo dpkg -i google-chrome-stable_current_amd64.deb
-sudo apt -f install
+   git clone https://github.com/robotechsi/vex-linux-fix.git
 ```
+2. Open Chrome (or Chromium) and go to `chrome://extensions`
+3. Turn on **Developer mode** (top-right toggle)
+4. Click **Load unpacked**
+5. Select the `vex-linux-fix` folder
+6. Open `vr.vex.com` (or any VEXcode web app) in a **new tab**
 
-## USB connection (to download code to robot)
-```bash
-sudo usermod -a -G dialout $USER
-# Log out and log back in
-```
+The extension loads automatically on every launch — no need to reinstall after restarting Chrome.
 
-## About this fix
-This fix was discovered and developed by **Oliver Buček** from RoboTech STEM Center 
-in Ptuj, Slovenia, while setting up VEXcode for Linux-based classrooms. After 
-investigating the browser console errors, he identified that VEXcode incorrectly 
-uses `navigator.maxTouchPoints > 0` to detect Android tablets — which also triggers 
-on Linux systems that report touch support. This Chrome extension overrides that 
-value to 0, allowing VEXcode to run normally on any Linux desktop.
+---
 
-**Oliver Buček** — RoboTech STEM Center, Ptuj, Slovenia
-[robotech.si](https://robotech.si)
+## Verifying it works
+
+### VEXcode VR
+1. Open `vr.vex.com`, select a playground, write a simple command, press **Play** → the robot should move.
+2. To confirm the headers are applied: open DevTools (F12) → **Network** tab → click `SimPythonInterpreterWebWorker.bundle.js` → **Response Headers** → `Cross-Origin-Embedder-Policy` should read `require-corp` (not `NOT-SET`).
+
+### VEXcode (codeiq, etc.)
+1. Open the app — it should load instead of showing the Android error.
+2. In the console, `navigator.maxTouchPoints` should return `0`.
+
+---
+
+## Notes & troubleshooting
+
+- **Enable hardware acceleration** in Chrome (`chrome://settings/system`) — VEXcode VR is a 3D Unity app and needs the GPU.
+- The benign warning `WebGL: INVALID_ENUM: getInternalformatParameter` can be ignored; the simulation still runs.
+- If the extension fails to load with an error about the `worker` resource type, your Chrome version may not support it. Remove `"worker"` from `resourceTypes` in `rules.json` (the `script` type usually covers worker scripts) and reload.
+- This is an unofficial community fix. VEX does not officially support Linux for VEXcode VR.
+
+---
+
+## Files
+
+| File | Purpose |
+|------|---------|
+| `manifest.json` | Extension manifest (MV3); declares matches, permissions, content script |
+| `fix.js` | Content script — overrides `maxTouchPoints` |
+| `rules.json` | `declarativeNetRequest` rules — injects COOP/COEP/CORP headers, removes CSP |
+
+---
 
 ## License
-MIT — free to use and share
+
+Free and open source. Share with your Linux-using coach friends.
+
+Made by [RoboTech](https://robotech.si) — VEX Robotics Ambassador, Slovenia.
