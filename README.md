@@ -27,17 +27,24 @@ The extension injects the missing headers via `declarativeNetRequest` and applie
 
 ## Installation
 
-1. Download or clone this repository:
-```bash
-   git clone https://github.com/robotechsi/vex-linux-fix.git
-```
-2. Open Chrome (or Chromium) and go to `chrome://extensions`
-3. Turn on **Developer mode** (top-right toggle)
-4. Click **Load unpacked**
-5. Select the `vex-linux-fix` folder
-6. Open `vr.vex.com` (or any VEXcode web app) in a **new tab**
+You do **not** need git, Node.js, or any build step. The extension is plain JavaScript — just download the files and load the folder.
 
-The extension loads automatically on every launch — no need to reinstall after restarting Chrome.
+### Option A — Download ZIP (easiest, no git needed)
+1. On the GitHub page, click the green **Code** button → **Download ZIP**
+2. Extract the ZIP somewhere permanent (don't delete it later — Chrome reads from this folder)
+3. Open Chrome (or Chromium) → go to `chrome://extensions`
+4. Turn on **Developer mode** (top-right toggle)
+5. Click **Load unpacked**
+6. Select the extracted `vex-linux-fix` folder
+7. Open `vr.vex.com` in a **new tab**
+
+### Option B — Clone with git
+```bash
+git clone https://github.com/robotechsi/vex-linux-fix.git
+```
+Then follow steps 3–7 above, selecting the cloned folder.
+
+**Important:** keep the folder where it is. Chrome loads the extension from that location every time it starts, so if you move or delete the folder, the extension stops working. The extension stays active across Chrome restarts — no need to reinstall.
 
 ---
 
