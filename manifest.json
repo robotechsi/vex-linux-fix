@@ -1,19 +1,28 @@
 {
   "manifest_version": 3,
   "name": "VEX Touch Fix",
-  "version": "1.2",
+  "version": "1.4",
+  "permissions": ["declarativeNetRequest"],
+  "host_permissions": ["<all_urls>"],
   "content_scripts": [{
     "matches": [
       "*://codeiq.vex.com/*",
+      "*://vr.vex.com/*",
       "*://codeair.vex.com/*",
       "*://code123.vex.com/*",
-      "*://codego.vex.com/*",
       "*://codeaim.vex.com/*",
-      "*://codeexp.vex.com/*",
       "*://codev5.vex.com/*"
     ],
     "js": ["fix.js"],
     "run_at": "document_start",
+    "all_frames": true,
     "world": "MAIN"
-  }]
+  }],
+  "declarative_net_request": {
+    "rule_resources": [{
+      "id": "coop_coep",
+      "enabled": true,
+      "path": "rules.json"
+    }]
+  }
 }
